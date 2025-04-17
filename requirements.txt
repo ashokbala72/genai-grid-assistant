@@ -5,4 +5,4 @@ langchain-openai==0.0.8
 openai
 numpy==1.23.5
 tqdm
-pydantic<2  # ensures compatibility with older Chroma + LangChain
+pydantic==1.10.13
