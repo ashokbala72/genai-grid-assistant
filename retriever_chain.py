@@ -3,22 +3,23 @@ from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
-import chromadb  # <-- Make sure this is imported
+import chromadb
 import os
 
 def build_chain():
-    # Load latest logs
+    # Load logs from file
     with open("data/live_feed.txt", "r") as f:
         logs = f.read()
 
-    # Split & embed
+    # Split into chunks
     docs = [Document(page_content=logs)]
     splitter = CharacterTextSplitter(chunk_size=300, chunk_overlap=20)
     chunks = splitter.split_documents(docs)
 
+    # Use OpenAI embeddings
     embeddings = OpenAIEmbeddings()
 
-    # ✅ Explicitly tell Chroma to use duckdb, not sqlite
+    # Force Chroma to use DuckDB instead of SQLite
     client_settings = chromadb.config.Settings(
         chroma_db_impl="duckdb+parquet",
         persist_directory="./chroma_db"
@@ -31,6 +32,8 @@ def build_chain():
         client_settings=client_settings
     )
 
+    # Create QA chain
     llm = ChatOpenAI(model="gpt-4-turbo")
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=vectordb.as_retriever())
+
     return qa
