@@ -1,0 +1,5 @@
+timestamp,location,event
+2025-04-15 09:00:00,Substation-12,Voltage dip below 220kV
+2025-04-15 09:00:02,Substation-07,Transformer temperature rise
+2025-04-15 09:00:04,Grid-Zone-A,Frequency deviation 49.3Hz
+2025-04-15 09:00:06,Substation-12,Relay protection triggered
