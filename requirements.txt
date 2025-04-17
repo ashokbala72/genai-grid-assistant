@@ -4,3 +4,5 @@ langchain-community
 chromadb
 openai
 streamlit
+chromadb
+duckdb

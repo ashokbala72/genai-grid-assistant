@@ -4,6 +4,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
 import os
+import chromadb
 
 def build_chain():
     # Load latest logs
@@ -16,7 +17,17 @@ def build_chain():
     chunks = splitter.split_documents(docs)
 
     embeddings = OpenAIEmbeddings()
-    vectordb = Chroma.from_documents(chunks, embedding=embeddings, persist_directory="./chroma_db")
+
+    # Use DuckDB backend to avoid SQLite error on Streamlit Cloud
+    vectordb = Chroma.from_documents(
+        chunks,
+        embedding=embeddings,
+        persist_directory="./chroma_db",
+        client_settings=chromadb.config.Settings(
+            chroma_db_impl="duckdb+parquet",
+            persist_directory="./chroma_db"
+        )
+    )
 
     llm = ChatOpenAI(model="gpt-4-turbo")
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=vectordb.as_retriever())
