@@ -7,6 +7,8 @@ import chromadb
 import os
 
 def build_chain():
+    print("⚙️  [INFO] Building retriever chain with DuckDB backend...")
+
     # Load logs
     with open("data/live_feed.txt", "r") as f:
         logs = f.read()
@@ -19,13 +21,14 @@ def build_chain():
     # Embeddings
     embeddings = OpenAIEmbeddings()
 
-    # ✅ USE DUCKDB backend explicitly
+    # ✅ Force Chroma to use DuckDB instead of SQLite
     settings = chromadb.config.Settings(
         chroma_db_impl="duckdb+parquet",
         persist_directory="./chroma_db"
     )
 
-    # Build vectorstore using duckdb backend
+    print(f"⚙️  [INFO] Using Chroma settings: {settings}")
+
     vectordb = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
@@ -33,8 +36,8 @@ def build_chain():
         client_settings=settings
     )
 
-    # LLM QA chain
     llm = ChatOpenAI(model="gpt-4-turbo")
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=vectordb.as_retriever())
 
+    print("✅ [INFO] Retriever chain ready.")
     return qa
