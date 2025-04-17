@@ -6,3 +6,4 @@ openai
 streamlit
 chromadb==0.4.24
 duckdb
+numpy==1.23.5
